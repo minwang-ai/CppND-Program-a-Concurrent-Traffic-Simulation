@@ -25,7 +25,7 @@ void MessageQueue<T>::send(T &&msg)
     // as well as _condition.notify_one() to add a new message to the queue and afterwards send a notification.
     std::lock_guard<std::mutex> lock(_mutex);
     _queue.push_back(std::move(msg));
-    _condition.nofigy_one();
+    _condition.notify_one();
 }
 
 
@@ -75,7 +75,12 @@ void TrafficLight::cycleThroughPhases()
     std::cout << "TrafficLight #" << _id << "::cycleThroughPhases: thread id = " << std::this_thread::get_id() << std::endl;
     lck.unlock();
 
-    double cycleDuration = 4; // duration of a single simulation cycle in ms
+    // random duration of a single simulation cycle: between 4 and 6 seconds
+    std::random_device rd; // obtain a seed for the random number engine.
+    std::mt19937 gen(rd()); // random number engine seeded with rd()
+    std::uniform_int_distribution<> dis(4000, 6000); // Uniform distribution between 4000 and 6000 milliseconds (corresponds to 4 and 6 seconds)
+    double cycleDuration = dis(gen); // Generate initial random duration
+    
     // init stop watch
     auto lastUpdate = std::chrono::system_clock::now();
     while (true)
