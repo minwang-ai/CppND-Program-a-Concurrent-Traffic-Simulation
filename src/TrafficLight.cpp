@@ -49,9 +49,17 @@ void TrafficLight::waitForGreen()
     }
 }
 
+
 TrafficLightPhase TrafficLight::getCurrentPhase()
 {
+    std::lock_guard<std::mutex> lock(_phaseMutex);
     return _currentPhase;
+}
+
+void TrafficLight::setCurrentPhase(TrafficLightPhase phase)
+{
+    std::lock_guard<std::mutex> lock(_phaseMutex);
+    _currentPhase = phase;
 }
 
 void TrafficLight::simulate()
@@ -71,7 +79,7 @@ void TrafficLight::cycleThroughPhases()
     // Also, the while-loop should use std::this_thread::sleep_for to wait 1ms between two cycles. 
     
     // print id of the current thread
-    std::unique_lock<std::mutex> lck(_mutex);
+    std::unique_lock<std::mutex> lck(_mtx);
     std::cout << "TrafficLight #" << _id << "::cycleThroughPhases: thread id = " << std::this_thread::get_id() << std::endl;
     lck.unlock();
 
@@ -92,14 +100,15 @@ void TrafficLight::cycleThroughPhases()
         long timeSinceLastUpdate = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - lastUpdate).count();
         if (timeSinceLastUpdate >= cycleDuration)
         {
+            std::lock_guard<std::mutex> lock(_phaseMutex);
             // toggle the current phase of the traffic light between red and green
-            if (_currentPhase==TrafficLightPhase::red)
+            if (getCurrentPhase()==TrafficLightPhase::red)
             {
-                _currentPhase=TrafficLightPhase::green;
+                setCurrentPhase(TrafficLightPhase::green);
             }
-            else
+            else if (getCurrentPhase()==TrafficLightPhase::green)
             {
-                _currentPhase=TrafficLightPhase::red;
+                setCurrentPhase(TrafficLightPhase::red);
             }
             // send an update method to the message queue using move semantics.
             _messageQueue.send(std::move(_currentPhase));

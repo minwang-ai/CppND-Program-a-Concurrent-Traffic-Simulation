@@ -2,7 +2,10 @@ cmake_minimum_required(VERSION 3.11.3)
 
 # set(CMAKE_CXX_STANDARD 17)
 project(traffic_simulation)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -pthread")
+
+# Add ThreadSanitizer flags
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -pthread -fsanitize=thread -g -O1 -fno-omit-frame-pointer ")
+set(CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS} -fsanitize=thread")
 
 find_package(OpenCV REQUIRED)
 
@@ -15,4 +18,6 @@ file(GLOB project_SRCS src/*.cpp) #src/*.h
 
 # Add project executable
 add_executable(traffic_simulation ${project_SRCS})
+
+# Link OpenCV libraries
 target_link_libraries(traffic_simulation ${OpenCV_LIBRARIES})

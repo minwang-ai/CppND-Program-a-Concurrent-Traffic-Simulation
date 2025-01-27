@@ -37,6 +37,7 @@ public:
 
     // getters / setters
     void setIsBlocked(bool isBlocked);
+    bool getIsBlocked();
 
     // typical behaviour methods
     void addVehicleToQueue(std::shared_ptr<Vehicle> vehicle);
@@ -56,6 +57,8 @@ private:
     TrafficLight _trafficLight;       // A TrafficLight object that controls the traffic signals at the intersection.
     WaitingVehicles _waitingVehicles; // list of all vehicles and their associated promises waiting to enter the intersection
     bool _isBlocked;                  // flag indicating wether the intersection is blocked by a vehicle
+    std::mutex _isBlockedMutex;         // Dedicated mutex for isBlocked state
+    std::mutex _queueMutex;           // mutex protecting the queue of waiting vehicles
 };
 
 #endif

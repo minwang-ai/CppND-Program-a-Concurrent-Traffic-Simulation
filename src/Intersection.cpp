@@ -99,15 +99,22 @@ void Intersection::addVehicleToQueue(std::shared_ptr<Vehicle> vehicle)
 void Intersection::vehicleHasLeft(std::shared_ptr<Vehicle> vehicle)
 {
     //std::cout << "Intersection #" << _id << ": Vehicle #" << vehicle->getID() << " has left." << std::endl;
-
+    std::lock_guard<std::mutex> lock(_queueMutex);
     // unblock queue processing
     this->setIsBlocked(false);
 }
 
 void Intersection::setIsBlocked(bool isBlocked)
 {
+    std::lock_guard<std::mutex> lock(_isBlockedMutex);
     _isBlocked = isBlocked;
     //std::cout << "Intersection #" << _id << " isBlocked=" << isBlocked << std::endl;
+}
+
+bool Intersection::getIsBlocked()
+{
+    std::lock_guard<std::mutex> lock(_isBlockedMutex);
+    return _isBlocked;
 }
 
 // virtual function which is executed in a thread
@@ -131,11 +138,12 @@ void Intersection::processVehicleQueue()
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
         // only proceed when at least one vehicle is waiting in the queue
-        if (_waitingVehicles.getSize() > 0 && !_isBlocked)
+        if (_waitingVehicles.getSize() > 0 && !getIsBlocked())
         {
+            std::unique_lock<std::mutex> lock(_queueMutex);
             // set intersection to "blocked" to prevent other vehicles from entering
             this->setIsBlocked(true);
-
+            lock.unlock();
             // permit entry to first vehicle in the queue (FIFO)
             _waitingVehicles.permitEntryToFirstInQueue();
         }
@@ -145,12 +153,11 @@ void Intersection::processVehicleQueue()
 bool Intersection::trafficLightIsGreen()
 {
    // please include this part once you have solved the final project tasks
-   /*
+   
    if (_trafficLight.getCurrentPhase() == TrafficLightPhase::green)
        return true;
    else
        return false;
-   */
 
-  return true; // makes traffic light permanently green
+  // return true; // makes traffic light permanently green
 } 

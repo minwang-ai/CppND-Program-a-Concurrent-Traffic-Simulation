@@ -10,12 +10,14 @@ std::mutex TrafficObject::_mtx;
 
 void TrafficObject::setPosition(double x, double y)
 {
+    std::lock_guard<std::mutex> lock(_positionMutex);
     _posX = x;
     _posY = y;
 }
 
 void TrafficObject::getPosition(double &x, double &y)
 {
+    std::lock_guard<std::mutex> lock(_positionMutex);
     x = _posX;
     y = _posY;
 }

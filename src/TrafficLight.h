@@ -49,6 +49,7 @@ public:
     TrafficLight();
     // getters / setters
     TrafficLightPhase getCurrentPhase();
+    void setCurrentPhase(TrafficLightPhase phase);
     // typical behaviour methods
     void waitForGreen();
     void simulate();
@@ -64,7 +65,7 @@ private:
     // send in conjunction with move semantics.
     MessageQueue<TrafficLightPhase> _messageQueue;
     std::condition_variable _condition;
-    std::mutex _mutex;
+    std::mutex _phaseMutex;           // mutex protecting the current phase of the traffic light
 };
 
 #endif

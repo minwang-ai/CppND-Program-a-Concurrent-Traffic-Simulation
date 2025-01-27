@@ -35,6 +35,7 @@ protected:
     double _posX, _posY;              // vehicle position in pixels
     std::vector<std::thread> threads; // holds all threads that have been launched within this object
     static std::mutex _mtx;           // mutex shared by all traffic objects for protecting cout 
+    std::mutex _positionMutex;        // mutex to protect object position 
 
 private:
     static int _idCnt; // global variable for counting object ids
