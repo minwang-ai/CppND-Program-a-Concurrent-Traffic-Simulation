@@ -100,7 +100,6 @@ void TrafficLight::cycleThroughPhases()
         long timeSinceLastUpdate = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - lastUpdate).count();
         if (timeSinceLastUpdate >= cycleDuration)
         {
-            std::lock_guard<std::mutex> lock(_phaseMutex);
             // toggle the current phase of the traffic light between red and green
             if (getCurrentPhase()==TrafficLightPhase::red)
             {

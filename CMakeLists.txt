@@ -1,10 +1,9 @@
 cmake_minimum_required(VERSION 3.11.3)
 
-# set(CMAKE_CXX_STANDARD 17)
 project(traffic_simulation)
 
 # Add ThreadSanitizer flags
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -pthread -fsanitize=thread -g -O1 -fno-omit-frame-pointer ")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -pthread -fsanitize=thread -g -O1 -fno-omit-frame-pointer")
 set(CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS} -fsanitize=thread")
 
 find_package(OpenCV REQUIRED)
